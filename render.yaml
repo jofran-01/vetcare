@@ -1,33 +1,26 @@
 services:
-  # Backend Flask
   - type: web
     name: vetcare-backend
     env: python
-    region: oregon
-    plan: free
     buildCommand: cd backend-api && pip install -r requirements.txt
     startCommand: cd backend-api && python src/main.py
     envVars:
       - key: SUPABASE_URL
-        value: https://auufzjszfkpxevuogdwj.supabase.co
+        value: https://[seu-projeto].supabase.co
       - key: SUPABASE_KEY
-        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1dWZ6anN6ZmtweGV2dW9nZHdqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDM1MDE3NCwiZXhwIjoyMDY1OTI2MTc0fQ.Q3sD5k9pzmwdHfPu46RX1H8LAQO9mq98dSLTMFTc2es
+        value: [sua-service-role-key]
       - key: JWT_SECRET
-        value: nEjDrsYmying3GPM3ZEdXYnDAGxA8gCSFLBWq5nDQDXOz69WY+bQP5QfBepxTEuUCk1xnxU5D7T5NDnd8W7hQg==
+        value: [gere-uma-chave-secreta]
       - key: FLASK_ENV
         value: production
       - key: PORT
         value: 10000
 
-  # Frontend React
   - type: web
     name: vetcare-frontend
     env: node
-    region: oregon
-    plan: free
     buildCommand: cd frontend && npm install && npm run build
     startCommand: cd frontend && npm run preview -- --host 0.0.0.0 --port $PORT
     envVars:
       - key: VITE_API_URL
         value: https://vetcare-backend.onrender.com
-
