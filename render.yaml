@@ -19,7 +19,7 @@ services:
   - type: web
     name: vetcare-frontend
     env: node
-    nodeVersion: 20.18.0   # <== essa linha que você deve adicionar
+    nodeVersion: 22.14.0   # <== essa linha que você deve adicionar
     buildCommand: cd frontend && npm install && npm run build
     startCommand: cd frontend && npm run preview -- --host 0.0.0.0 --port $PORT
     envVars:
