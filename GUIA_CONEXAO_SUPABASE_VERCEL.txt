@@ -1,0 +1,292 @@
+# 🚀 GUIA COMPLETO: CONECTANDO PROJETO TCC VETERINÁRIO AO SUPABASE E VERCEL
+
+## 📋 ÍNDICE
+1. [Configuração do Supabase](#configuração-do-supabase)
+2. [Configuração do Projeto](#configuração-do-projeto)
+3. [Deploy na Vercel](#deploy-na-vercel)
+4. [Testando a Conexão](#testando-a-conexão)
+5. [Solução de Problemas](#solução-de-problemas)
+
+---
+
+## 🗄️ CONFIGURAÇÃO DO SUPABASE
+
+### Passo 1: Criar Conta e Projeto
+1. Acesse [supabase.com](https://supabase.com)
+2. Clique em "Start your project" ou "Sign Up"
+3. Faça login com GitHub, Google ou email
+4. Clique em "New Project"
+5. Escolha sua organização (ou crie uma nova)
+6. Preencha:
+   - **Name**: `projeto-tcc-veterinario`
+   - **Database Password**: Crie uma senha forte (ANOTE ESTA SENHA!)
+   - **Region**: Escolha a mais próxima (ex: South America - São Paulo)
+7. Clique em "Create new project"
+8. Aguarde alguns minutos para o projeto ser criado
+
+### Passo 2: Executar o Script SQL
+1. No painel do Supabase, vá para **"SQL Editor"** (ícone de código no menu lateral)
+2. Clique em **"New query"**
+3. Abra o arquivo `database/schema.sql` que foi criado
+4. **COPIE TODO O CONTEÚDO** do arquivo e cole no editor SQL
+5. Clique em **"Run"** (botão verde no canto inferior direito)
+6. Aguarde a execução (pode levar alguns segundos)
+7. Se aparecer "Success. No rows returned", está correto!
+
+### Passo 3: Verificar Tabelas Criadas
+1. Vá para **"Table Editor"** (ícone de tabela no menu lateral)
+2. Você deve ver todas as tabelas criadas:
+   - usuarios_tutores
+   - usuarios_clinicas
+   - animais
+   - agendamentos
+   - consultas
+   - vacinas
+   - contatos
+   - configuracoes_usuario
+   - itens
+
+### Passo 4: Obter Credenciais de Conexão
+1. Vá para **"Settings"** → **"API"**
+2. **ANOTE ESTAS INFORMAÇÕES** (você precisará delas):
+   - **Project URL**: `https://[seu-projeto-id].supabase.co`
+   - **anon public key**: `eyJ...` (chave longa que começa com eyJ)
+   - **service_role key**: `eyJ...` (chave secreta - NUNCA exponha publicamente)
+
+---
+
+## ⚙️ CONFIGURAÇÃO DO PROJETO
+
+### Passo 1: Criar Arquivo .env
+1. Na raiz do seu projeto, crie um arquivo chamado `.env`
+2. Adicione as seguintes variáveis (substitua pelos seus valores):
+
+```env
+# Configurações do Supabase
+SUPABASE_URL=https://[seu-projeto-id].supabase.co
+SUPABASE_ANON_KEY=eyJ[sua-chave-anon-publica]
+SUPABASE_SERVICE_KEY=eyJ[sua-chave-service-role-secreta]
+
+# Configurações da Aplicação
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://[seu-dominio].vercel.app
+
+# Configurações para QR Code
+QR_CODE_BASE_URL=https://[seu-dominio].vercel.app/animal/
+
+# Configurações de Email (opcional)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=seu-email@gmail.com
+SMTP_PASS=sua-senha-app
+
+# Configurações de Upload (opcional)
+UPLOAD_MAX_SIZE=5242880
+ALLOWED_EXTENSIONS=jpg,jpeg,png,gif,pdf
+```
+
+### Passo 2: Criar .env.example
+1. Copie o arquivo `.env` para `.env.example`
+2. **REMOVA TODOS OS VALORES REAIS**, deixando apenas as chaves:
+
+```env
+# Configurações do Supabase
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_KEY=
+
+# Configurações da Aplicação
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=
+
+# Configurações para QR Code
+QR_CODE_BASE_URL=
+
+# Configurações de Email (opcional)
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+
+# Configurações de Upload (opcional)
+UPLOAD_MAX_SIZE=5242880
+ALLOWED_EXTENSIONS=jpg,jpeg,png,gif,pdf
+```
+
+### Passo 3: Atualizar .gitignore
+Certifique-se de que o arquivo `.gitignore` contém:
+```
+.env
+node_modules/
+.vercel/
+*.log
+.DS_Store
+```
+
+---
+
+## 🚀 DEPLOY NA VERCEL
+
+### Passo 1: Preparar o Repositório GitHub
+1. Crie um repositório no GitHub (ex: `projeto-tcc-veterinario`)
+2. Faça push do seu código:
+```bash
+git init
+git add .
+git commit -m "Initial commit - Projeto TCC Veterinário"
+git branch -M main
+git remote add origin https://github.com/[seu-usuario]/projeto-tcc-veterinario.git
+git push -u origin main
+```
+
+### Passo 2: Conectar à Vercel
+1. Acesse [vercel.com](https://vercel.com)
+2. Faça login com sua conta GitHub
+3. Clique em **"New Project"**
+4. Selecione o repositório `projeto-tcc-veterinario`
+5. Clique em **"Import"**
+
+### Passo 3: Configurar Variáveis de Ambiente na Vercel
+1. Na página de configuração do projeto, vá para **"Environment Variables"**
+2. Adicione TODAS as variáveis do seu arquivo `.env`:
+   - **Name**: `SUPABASE_URL` | **Value**: `https://[seu-projeto-id].supabase.co`
+   - **Name**: `SUPABASE_ANON_KEY` | **Value**: `eyJ[sua-chave-anon]`
+   - **Name**: `SUPABASE_SERVICE_KEY` | **Value**: `eyJ[sua-chave-service]`
+   - Continue para todas as outras variáveis...
+3. Certifique-se de marcar todas para **Production**, **Preview** e **Development**
+
+### Passo 4: Configurar Build Settings (se necessário)
+- **Framework Preset**: Other (ou detectado automaticamente)
+- **Build Command**: `npm run build` (se usando Node.js)
+- **Output Directory**: `dist` ou `build` (dependendo do seu setup)
+- **Install Command**: `npm install`
+
+### Passo 5: Deploy
+1. Clique em **"Deploy"**
+2. Aguarde o build e deploy (pode levar alguns minutos)
+3. Quando concluído, você receberá uma URL como: `https://projeto-tcc-veterinario.vercel.app`
+
+---
+
+## 🧪 TESTANDO A CONEXÃO
+
+### Teste 1: Verificar se o Site Carrega
+1. Acesse a URL fornecida pela Vercel
+2. Verifique se todas as páginas carregam sem erro
+3. Abra o console do navegador (F12) e verifique se não há erros JavaScript
+
+### Teste 2: Testar Conexão com Banco
+1. Tente fazer um cadastro de tutor ou clínica
+2. Vá ao Supabase → Table Editor → usuarios_tutores (ou usuarios_clinicas)
+3. Verifique se o registro foi criado
+
+### Teste 3: Testar Formulário de Contato
+1. Preencha o formulário de contato no site
+2. Vá ao Supabase → Table Editor → contatos
+3. Verifique se a mensagem foi salva
+
+### Teste 4: Verificar Logs
+1. Na Vercel, vá para **"Functions"** → **"View Function Logs"**
+2. Procure por erros de conexão ou SQL
+3. No Supabase, vá para **"Logs"** para ver queries executadas
+
+---
+
+## 🔧 SOLUÇÃO DE PROBLEMAS
+
+### Problema: "Failed to connect to database"
+**Soluções:**
+1. Verifique se as variáveis `SUPABASE_URL` e `SUPABASE_ANON_KEY` estão corretas
+2. Confirme se o projeto Supabase está ativo (não pausado)
+3. Teste a conexão localmente primeiro
+
+### Problema: "Invalid API key"
+**Soluções:**
+1. Regenere as chaves API no Supabase (Settings → API → Reset)
+2. Atualize as variáveis de ambiente na Vercel
+3. Faça um novo deploy
+
+### Problema: "Table doesn't exist"
+**Soluções:**
+1. Execute novamente o script SQL no Supabase
+2. Verifique se todas as tabelas foram criadas em Table Editor
+3. Confirme se está usando o banco correto
+
+### Problema: "CORS error"
+**Soluções:**
+1. No Supabase, vá para Settings → API → CORS
+2. Adicione sua URL da Vercel na lista de origens permitidas
+3. Adicione também `localhost:3000` para desenvolvimento local
+
+### Problema: Deploy falha na Vercel
+**Soluções:**
+1. Verifique os logs de build na Vercel
+2. Confirme se todas as dependências estão no package.json
+3. Verifique se o comando de build está correto
+
+### Problema: Variáveis de ambiente não funcionam
+**Soluções:**
+1. Confirme se as variáveis estão definidas para todos os ambientes (Production, Preview, Development)
+2. Faça um redeploy após adicionar/alterar variáveis
+3. Use `console.log(process.env.SUPABASE_URL)` para debug
+
+---
+
+## 📝 COMANDOS ÚTEIS
+
+### Para desenvolvimento local:
+```bash
+# Instalar dependências
+npm install
+
+# Executar localmente
+npm run dev
+
+# Build para produção
+npm run build
+```
+
+### Para atualizar o projeto:
+```bash
+# Fazer alterações no código
+git add .
+git commit -m "Descrição das alterações"
+git push
+
+# A Vercel fará deploy automaticamente
+```
+
+---
+
+## 🔐 SEGURANÇA
+
+### ⚠️ IMPORTANTE - NUNCA FAÇA ISSO:
+- Nunca commite o arquivo `.env` no Git
+- Nunca exponha a `SUPABASE_SERVICE_KEY` no frontend
+- Nunca coloque credenciais em código JavaScript público
+
+### ✅ BOAS PRÁTICAS:
+- Use apenas `SUPABASE_ANON_KEY` no frontend
+- Mantenha `SUPABASE_SERVICE_KEY` apenas no backend
+- Use Row Level Security (RLS) no Supabase para maior segurança
+- Monitore logs regularmente
+
+---
+
+## 📞 SUPORTE
+
+Se encontrar problemas:
+1. Verifique os logs da Vercel e Supabase
+2. Consulte a documentação oficial:
+   - [Supabase Docs](https://supabase.com/docs)
+   - [Vercel Docs](https://vercel.com/docs)
+3. Teste localmente antes de fazer deploy
+
+---
+
+**🎉 Pronto! Seu projeto está conectado ao Supabase e deployado na Vercel!**
+
+Agora tudo que for inserido no seu site será automaticamente salvo no banco de dados do Supabase, e você pode visualizar os dados em tempo real no painel administrativo do Supabase.
+
